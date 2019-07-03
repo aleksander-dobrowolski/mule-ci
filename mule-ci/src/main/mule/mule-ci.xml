@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+	<apikit:config name="mule-ci-config" raml="mule-ci.raml"
+		outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<flow name="get:\hello:mule-ci-config">
+		<set-payload value="Hello!" doc:name="Set Payload" doc:id="37a2a45d-8488-4ee8-a061-41b653068f51" />
+	</flow>
+</mule>

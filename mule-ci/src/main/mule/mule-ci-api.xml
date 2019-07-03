@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="mule-ci-main" doc:id="4aaad8e7-ede4-4122-86fa-b50cf4c726d0" >
+		<http:listener doc:name="Listener" doc:id="8427ba7c-67b0-4624-9aaf-909f770c2f6d" config-ref="HTTP_Listener_config" path="/hello" >
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+			<http:error-response statusCode="#[vars.httpStatus default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<apikit:router doc:name="APIkit Router" doc:id="6f684868-ac2e-4d77-a5a1-f65b7bfcd294" config-ref="mule-ci-config" />
+		<error-handler >
+			<on-error-propagate doc:name="On Error Propagate" doc:id="16bd472e-7c19-4933-843a-e3de0bd19200" type="APIKIT:BAD_REQUEST" >
+				<ee:transform doc:name="Transform Message" doc:id="3f6e72fa-ede6-40fa-9c35-3063141b4d81" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate doc:name="On Error Propagate" doc:id="13a35fac-f178-4aa3-94d0-0cb35ce36f3b" type="APIKIT:NOT_FOUND" >
+				<ee:transform doc:name="Transform Message" doc:id="c31b99e5-dcf3-4638-ac2d-95a47a4b3f05" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate doc:name="On Error Propagate" doc:id="bbf05251-ade6-456c-8c52-c91ef45d39d3" type="APIKIT:METHOD_NOT_ALLOWED" >
+				<ee:transform doc:name="Transform Message" doc:id="c2acb14f-9aa8-4143-9659-9eaec7fac647" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate doc:name="On Error Propagate" doc:id="bbf07752-bdd3-4f14-a9d0-d4a2442af33f" type="APIKIT:NOT_ACCEPTABLE" >
+				<ee:transform doc:name="Transform Message" doc:id="4e7572f5-6c91-4e8d-a533-65ba1fd0549f" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate doc:name="On Error Propagate" doc:id="c4419662-7dd7-4423-baff-84750c55d972" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+				<ee:transform doc:name="Transform Message" doc:id="81b8be7d-80f0-4821-b849-572b9c80d15d" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate doc:name="On Error Propagate" doc:id="e9a5b815-85f2-407b-a379-264a869099c5" type="APIKIT:NOT_IMPLEMENTED" >
+				<ee:transform doc:name="Transform Message" doc:id="cefe765a-d38f-4147-97db-c4b58433e2a7" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="mule-ci-console" doc:id="b2c92948-97ba-4f96-a14a-154ea133df9c" >
+		<http:listener doc:name="Listener" doc:id="5b3c88cd-9b3b-40c1-88e8-0f2cfd4d6152" config-ref="HTTP_Listener_config" path="/console/*" >
+			<http:response statusCode="#[vars.httpStatus default 200]" >
+				<http:headers ><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]" >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+				<http:headers ><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:console doc:name="APIkit Console" doc:id="eda16d40-ea96-42a4-ab3b-88fa8af636e1" config-ref="mule-ci-config" />
+		<error-handler >
+			<on-error-propagate doc:name="On Error Propagate" doc:id="35796949-048d-480a-aead-648c2c845f7c" type="APIKIT:NOT_FOUND" >
+				<ee:transform doc:name="Transform Message" doc:id="d237db48-2f3b-4df6-b87a-39ef59621114" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
